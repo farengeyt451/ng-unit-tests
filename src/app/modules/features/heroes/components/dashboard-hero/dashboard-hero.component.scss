@@ -1,0 +1,9 @@
+.dashboard-hero {
+  display: inline-block;
+  padding: 4px;
+  cursor: pointer;
+
+  &:first-child {
+    margin-left: 0;
+  }
+}

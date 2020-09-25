@@ -1,0 +1,12 @@
+.dashboard__hero {
+  display: inline-block;
+  margin-left: 10px;
+
+  &:first-child {
+    margin-left: 0;
+  }
+}
+
+.dashboard__caption {
+  padding: 10px;
+}

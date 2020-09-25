@@ -1,0 +1,12 @@
+.heroes {
+  padding: 40px;
+}
+
+.nav__item {
+  display: inline-block;
+  margin-left: 10px;
+
+  &:first-child {
+    margin-left: 0;
+  }
+}

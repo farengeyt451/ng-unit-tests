@@ -1,0 +1,23 @@
+<div class="dashboard">
+
+  <h2
+    class="dashboard__caption"
+    highlight
+  >
+    {{ title }}
+  </h2>
+
+  <div class="dashboard__heroes">
+
+    <div
+      class="dashboard__hero"
+      *ngFor="let hero of heroes"
+    >
+      <dashboard-hero
+        [hero]=hero
+        (selected)="gotoDetail($event)"
+      >
+      </dashboard-hero>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<div
+  *ngIf="hero"
+  class="hero-detail"
+>
+  <h2 class="hero-detail__caption">
+    <span class="hero-detail__name">{{ hero.name | titlecase }}</span>
+    Details
+  </h2>
+
+  <div class="hero-detail__info">
+    <div class="hero-detail__id">
+      <label class="hero-detail__label">id: </label>{{ hero.id }}
+    </div>
+
+    <div class="hero-detail__group">
+      <label class="hero-detail__label" for="name">name: </label>
+      <input class="hero-detail__input" id="name" [(ngModel)]="hero.name" placeholder="name" />
+    </div>
+  </div>
+
+  <div class="hero-detail__group">
+    <button
+      class="hero-detail__action"
+      (click)="onSave()"
+    >
+      Save
+    </button>
+
+    <button
+      class="hero-detail__action"
+      (click)="onCancel()"
+    >
+      Cancel
+    </button>
+  </div>
+</div>

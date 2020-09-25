@@ -1,0 +1,36 @@
+<div class="heroes">
+
+  <div class="heroes__banner">
+    <banner></banner>
+  </div>
+
+  <div class="heroes__welcome">
+    <welcome></welcome>
+  </div>
+
+  <nav class="heroes__nav nav">
+    <a
+      class="nav__item"
+      routerLink="/dashboard"
+    >
+      Dashboard
+    </a>
+    <a
+      class="nav__item"
+      routerLink="/heroes"
+    >
+      Heroes
+    </a>
+    <a
+      class="nav__item"
+      routerLink="/about"
+    >
+      About
+    </a>
+  </nav>
+
+  <div class="heroes__content">
+    <router-outlet></router-outlet>
+  </div>
+
+</div>

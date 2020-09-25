@@ -1,0 +1,23 @@
+dist: trusty
+language: node_js
+node_js:
+  - "12"
+
+os:
+  - linux
+
+addons:
+  chrome: stable
+
+cache:
+  directories:
+    - ./node_modules
+
+install:
+  - npm ci
+
+jobs:
+  include:
+    - stage: unit-tests
+      script:
+        - unit-tests:coverage

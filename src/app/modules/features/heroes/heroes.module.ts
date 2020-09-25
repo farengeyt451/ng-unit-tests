@@ -20,7 +20,6 @@ import { AboutComponent } from './components/about';
 import { BannerComponent } from './components/banner';
 import { DashboardComponent } from './components/dashboard';
 import { DashboardHeroComponent } from './components/dashboard-hero';
-import { DemoComponent } from './components/demo';
 import { HeroDetailComponent } from './components/hero-detail';
 import { HeroListComponent } from './components/hero-list';
 import { TwainComponent } from './components/twain';
@@ -46,7 +45,6 @@ import { HighlightDirective } from './directives/highlight.directive';
     BannerComponent,
     DashboardComponent,
     DashboardHeroComponent,
-    DemoComponent,
     HeroDetailComponent,
     HeroListComponent,
     HeroesIndexComponent,

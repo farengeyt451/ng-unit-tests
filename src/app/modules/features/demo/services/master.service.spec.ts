@@ -25,6 +25,4 @@ describe('Service: MasterService', () => {
   it('Should return real value from the real service: #getValue ', () => {
     expect(masterService.getValue()).toBe('real value');
   });
-
-  it('Should return faked value from a fakeService: #getValue', () => {});
 });

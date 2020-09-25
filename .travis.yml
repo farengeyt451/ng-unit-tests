@@ -20,4 +20,4 @@ jobs:
   include:
     - stage: unit-tests
       script:
-        - unit-tests:coverage
+        - npm run unit-tests:coverage

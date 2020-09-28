@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
 import { Hero } from '../../interfaces/hero.interface';
 
 @Component({
@@ -10,6 +9,7 @@ import { Hero } from '../../interfaces/hero.interface';
 export class DashboardHeroComponent {
   @Input() hero: Hero;
   @Output() selected = new EventEmitter<Hero>();
+
   click() {
     this.selected.emit(this.hero);
   }

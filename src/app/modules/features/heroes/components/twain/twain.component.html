@@ -1,3 +1,20 @@
-<p class="twain"><i>{{quote | async}}</i></p>
-<button (click)="getQuote()">Next quote</button>
-<p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+<div class="twain">
+  <p class="twain__quote">
+    <i class="twain__highlighted">{{ quote | async }}</i>
+  </p>
+
+  <button
+    class="twain__action"
+    (click)="getQuote()"
+  >
+    Next quote
+  </button>
+
+  <p
+    *ngIf="errorMessage"
+    class="twain__error"
+  >
+    {{ errorMessage }}
+  </p>
+
+</div>

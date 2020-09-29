@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
 import { Observable, of } from 'rxjs';
 import { catchError, startWith } from 'rxjs/operators';
-
 import { TwainService } from '../../services/twain.service';
 
 @Component({
@@ -15,7 +13,7 @@ export class TwainComponent implements OnInit {
 
   constructor(private twainService: TwainService) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.getQuote();
   }
 
@@ -24,9 +22,9 @@ export class TwainComponent implements OnInit {
     this.quote = this.twainService.getQuote().pipe(
       startWith('...'),
       catchError((err: any) => {
-        // Wait a turn because errorMessage already set once this turn
+        /** Wait a turn because errorMessage already set once this turn */
         setTimeout(() => (this.errorMessage = err.message || err.toString()));
-        return of('...'); // reset message to placeholder
+        return of('...'); // Reset message to placeholder
       })
     );
   }

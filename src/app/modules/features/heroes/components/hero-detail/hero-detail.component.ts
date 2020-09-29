@@ -1,4 +1,3 @@
-/* tslint:disable:member-ordering */
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -20,13 +19,17 @@ export class HeroDetailComponent implements OnInit {
 
   @Input() hero: Hero;
 
-  ngOnInit(): void {
-    // get hero when `id` param changes
-    this.route.paramMap.subscribe((pmap) => this.getHero(pmap.get('id')));
+  ngOnInit() {
+    this.subToRouting();
   }
 
-  private getHero(id: string): void {
-    // when no id or id===0, create new blank hero
+  private subToRouting() {
+    this.route.paramMap.subscribe((paramMap) =>
+      this.getHero(Number(paramMap.get('id')))
+    );
+  }
+
+  private getHero(id: number) {
     if (!id) {
       this.hero = { id: 0, name: '' } as Hero;
       return;
@@ -35,17 +38,13 @@ export class HeroDetailComponent implements OnInit {
     this.heroDetailService.getHero(id).subscribe((hero) => {
       if (hero) {
         this.hero = hero;
-        console.log(
-          'log: HeroDetailComponent -> getHero -> this.hero',
-          this.hero
-        );
       } else {
-        this.gotoList(); // id not found; navigate to list
+        this.gotoList();
       }
     });
   }
 
-  onSave(): void {
+  onSave() {
     this.heroDetailService.saveHero(this.hero).subscribe(() => this.gotoList());
   }
 

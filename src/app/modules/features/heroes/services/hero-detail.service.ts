@@ -10,14 +10,14 @@ import { HeroService } from './hero.service';
 export class HeroDetailService {
   constructor(private heroService: HeroService) {}
 
-  // Returns a clone which caller may modify safely
+  /** Returns a clone which caller may modify safely */
   getHero(id: number | string): Observable<Hero> {
     if (typeof id === 'string') {
       id = parseInt(id, 10);
     }
     return this.heroService.getHero(id).pipe(
       map((hero) => {
-        return hero ? Object.assign({}, hero) : null; // clone or null
+        return hero ? Object.assign({}, hero) : null; // Clone or null
       })
     );
   }

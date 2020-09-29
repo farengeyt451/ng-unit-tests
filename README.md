@@ -4,8 +4,6 @@
 
 ### Based on official documentation
 
-Lazy loading feature modules
-
 <!-- prettier-ignore-start -->
 ```bash
 ./ng-unit-tests/src

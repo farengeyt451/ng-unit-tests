@@ -178,114 +178,107 @@ describe('HeroDetailComponent - with TestBed', () => {
  * Real HeroDetailService call fake updateHero() method in fake HeroService, which delivers a safe test result
  * Stub ActivatedRoute
  */
-fdescribe('HeroDetailComponent - Case 1', () => {
+describe('Component: HeroDetailComponent - with "HeroModule" setup', () => {
   let activatedRoute: ActivatedRouteStub;
+  let routerSpy: jasmine.SpyObj<Router>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     activatedRoute = new ActivatedRouteStub();
+    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+
+    TestBed.configureTestingModule({
+      imports: [FormsModule],
+      declarations: [HeroDetailComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: activatedRoute },
+        { provide: HeroService, useClass: TestHeroService },
+        { provide: Router, useValue: routerSpy },
+      ],
+    }).compileComponents();
   });
-  describe('With HeroModule setup', () => {
-    let routerSpy: jasmine.SpyObj<Router>;
+
+  describe('When navigate to existing hero', () => {
+    let expectedHero: Hero;
+    let fixture: ComponentFixture<HeroDetailComponent>;
+    let component: HeroDetailComponent;
+    let debugEl: DebugElement;
 
     beforeEach(async(() => {
-      routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+      expectedHero = getTestHeroes()[1];
+      activatedRoute.setParamMap({ id: expectedHero.id });
 
-      TestBed.configureTestingModule({
-        imports: [FormsModule],
-        declarations: [HeroDetailComponent],
-        providers: [
-          { provide: ActivatedRoute, useValue: activatedRoute },
-          { provide: HeroService, useClass: TestHeroService },
-          { provide: Router, useValue: routerSpy },
-        ],
-      }).compileComponents();
+      fixture = TestBed.createComponent(HeroDetailComponent);
+      debugEl = fixture.debugElement;
+      component = debugEl.componentInstance;
+
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+      });
     }));
 
-    describe('When navigate to existing hero', () => {
-      let expectedHero: Hero;
-      let fixture: ComponentFixture<HeroDetailComponent>;
-      let component: HeroDetailComponent;
-      let debugEl: DebugElement;
+    it('Should display hero name', () => {
+      const heroName = debugEl.query(By.css('.hero-detail__name'));
 
-      beforeEach(async(() => {
-        expectedHero = getTestHeroes()[1];
-        activatedRoute.setParamMap({ id: expectedHero.id });
+      expect(heroName.nativeElement.textContent).toBe(getTestHeroes()[1].name);
+    });
 
-        fixture = TestBed.createComponent(HeroDetailComponent);
-        debugEl = fixture.debugElement;
-        component = debugEl.componentInstance;
+    it('Should navigate when click cancel', () => {
+      const heroName = debugEl.query(By.css('.hero-detail__action--cancel'));
+      click(heroName);
 
-        fixture.detectChanges();
-        fixture.whenStable().then(() => {
-          fixture.detectChanges();
-        });
-      }));
+      expect(routerSpy.navigate.calls.any()).toBe(true);
+      expect(routerSpy.navigate).toHaveBeenCalled();
+      expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
+    });
 
-      it('Should display hero name', () => {
-        const heroName = debugEl.query(By.css('.hero-detail__name'));
+    it('Should save when click save, but not navigate immediately', () => {
+      /**
+       * Get service injected into component and spy on its saveHero() method
+       * It delegates to fake `HeroService.updateHero` which delivers a safe test result
+       **/
+      const hds = fixture.debugElement.injector.get(HeroDetailService);
 
-        expect(heroName.nativeElement.textContent).toBe(
-          getTestHeroes()[1].name
-        );
-      });
+      const saveSpy = spyOn(hds, 'saveHero').and.callThrough();
+      const saveBtn = debugEl.query(By.css('.hero-detail__action--save'));
 
-      it('Should navigate when click cancel', () => {
-        const heroName = debugEl.query(By.css('.hero-detail__action--cancel'));
-        click(heroName);
+      click(saveBtn);
 
-        expect(routerSpy.navigate.calls.any()).toBe(true);
-        expect(routerSpy.navigate).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
-      });
+      expect(saveSpy.calls.any()).toBe(true);
+      expect(saveSpy).toHaveBeenCalled();
+      expect(saveSpy).toHaveBeenCalledTimes(1);
 
-      it('Should save when click save, but not navigate immediately', () => {
-        /**
-         * Get service injected into component and spy on its saveHero() method
-         * It delegates to fake `HeroService.updateHero` which delivers a safe test result
-         **/
-        const hds = fixture.debugElement.injector.get(HeroDetailService);
+      expect(routerSpy.navigate.calls.any()).toBe(false);
+      expect(routerSpy.navigate).toHaveBeenCalledTimes(0);
+    });
 
-        const saveSpy = spyOn(hds, 'saveHero').and.callThrough();
-        const saveBtn = debugEl.query(By.css('.hero-detail__action--save'));
+    /** Wait for heroDetailService.saveHero(this.hero).subscribe() emits success */
+    it('Should navigate when click save and save resolves', fakeAsync(() => {
+      const saveBtn = debugEl.query(By.css('.hero-detail__action--save'));
+      click(saveBtn);
+      tick();
+      expect(routerSpy.navigate.calls.any()).toBe(true);
+      expect(routerSpy.navigate).toHaveBeenCalled();
+      expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
+    }));
 
-        click(saveBtn);
+    it('Should convert hero name to Title Case', () => {
+      const nameInput: DebugElement = debugEl.query(
+        By.css('.hero-detail__input')
+      );
+      const nameDisplay: DebugElement = debugEl.query(
+        By.css('.hero-detail__name')
+      );
 
-        expect(saveSpy.calls.any()).toBe(true);
-        expect(saveSpy).toHaveBeenCalled();
-        expect(saveSpy).toHaveBeenCalledTimes(1);
+      nameInput.nativeElement.value = 'quick BROWN fOx';
 
-        expect(routerSpy.navigate.calls.any()).toBe(false);
-        expect(routerSpy.navigate).toHaveBeenCalledTimes(0);
-      });
+      /** Dispatch a DOM event so that Angular learns of input value change */
+      nameInput.nativeElement.dispatchEvent(new Event('input'));
 
-      /** Wait for heroDetailService.saveHero(this.hero).subscribe() emits success */
-      it('Should navigate when click save and save resolves', fakeAsync(() => {
-        const saveBtn = debugEl.query(By.css('.hero-detail__action--save'));
-        click(saveBtn);
-        tick();
-        expect(routerSpy.navigate.calls.any()).toBe(true);
-        expect(routerSpy.navigate).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
-      }));
+      /** Tell Angular to update the display binding through the title pipe */
+      fixture.detectChanges();
 
-      it('Should convert hero name to Title Case', () => {
-        const nameInput: DebugElement = debugEl.query(
-          By.css('.hero-detail__input')
-        );
-        const nameDisplay: DebugElement = debugEl.query(
-          By.css('.hero-detail__name')
-        );
-
-        nameInput.nativeElement.value = 'quick BROWN fOx';
-
-        /** Dispatch a DOM event so that Angular learns of input value change */
-        nameInput.nativeElement.dispatchEvent(new Event('input'));
-
-        /** Tell Angular to update the display binding through the title pipe */
-        fixture.detectChanges();
-
-        expect(nameDisplay.nativeElement.textContent).toBe('Quick Brown Fox');
-      });
+      expect(nameDisplay.nativeElement.textContent).toBe('Quick Brown Fox');
     });
   });
 });

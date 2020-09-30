@@ -17,7 +17,7 @@ export class TestHeroService extends HeroService {
   }
 
   heroes = getTestHeroes();
-  lastResult: Observable<any>; // result from last method call
+  lastResult: Observable<any>; // Result from last method call
 
   addHero(hero: Hero): Observable<Hero> {
     throw new Error('Method not implemented.');
@@ -35,15 +35,15 @@ export class TestHeroService extends HeroService {
     if (typeof id === 'string') {
       id = parseInt(id, 10);
     }
-    const hero = this.heroes.find((h) => h.id === id);
+    const hero = this.heroes.find((hero) => hero.id === id);
     return (this.lastResult = asyncData(hero));
   }
 
   updateHero(hero: Hero): Observable<Hero> {
     return (this.lastResult = this.getHero(hero.id).pipe(
-      map((h) => {
-        if (h) {
-          return Object.assign(h, hero);
+      map((hero) => {
+        if (hero) {
+          return Object.assign(hero, hero);
         }
         throw new Error(`Hero ${hero.id} not found`);
       })

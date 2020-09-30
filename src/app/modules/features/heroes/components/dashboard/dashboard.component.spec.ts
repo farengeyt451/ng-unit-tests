@@ -1,11 +1,13 @@
 import { DebugElement } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { HeroService } from '../../services/hero.service';
+import { asyncData, click, getTestHeroes } from '../../testing';
 import { DashboardHeroComponent } from '../dashboard-hero/dashboard-hero.component';
 import { DashboardComponent } from './dashboard.component';
 
-describe('Name of the group', () => {
+describe('Component: DashboardComponent', () => {
   let component: DashboardComponent;
   let debugEl: DebugElement;
   let fixture: ComponentFixture<DashboardComponent>;
@@ -19,28 +21,69 @@ describe('Name of the group', () => {
     ['getHeroes']
   );
 
-  beforeEach(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       providers: [
         { provide: HeroService, useValue: heroServiceSpy },
         { provide: Router, useValue: routerSpy },
       ],
+      declarations: [DashboardComponent, DashboardHeroComponent],
+    })
+      .compileComponents()
+      .then(() => {
+        fixture = TestBed.createComponent(DashboardComponent);
+        debugEl = fixture.debugElement;
+        component = debugEl.componentInstance;
+        router = fixture.debugElement.injector.get(Router);
+        heroServiceSpy.getHeroes.and.returnValue(asyncData(getTestHeroes()));
+      });
+  }));
+
+  it('Should not have heroes before ngOnInit', () => {
+    expect(component.heroes.length).toBe(0); // 0 heroes on init
+  });
+
+  it('Should not have heroes immediately after ngOnInit', () => {
+    fixture.detectChanges();
+    expect(component.heroes.length).toBe(0);
+  });
+
+  it('Should have heroes', async(() => {
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.heroes.length).toBeGreaterThan(0);
     });
-    fixture = TestBed.createComponent(DashboardComponent);
-    debugEl = fixture.debugElement;
-    component = debugEl.componentInstance;
-  });
+  }));
 
-  it('should tell ROUTER to navigate when hero clicked', () => {
-    // args passed to router.navigateByUrl() spy
-    const spy = router.navigateByUrl as jasmine.Spy;
-    const navArgs = spy.calls.first().args[0];
+  /**
+   * First fixture.detectChanges() - start process of receive async data
+   * whenStable() - wait for observable emit (JavaScript engine's task queue becomes empty)
+   * Second fixture.detectChanges() - bind received data to view, update view
+   */
+  it('Should display heroes', async(() => {
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      fixture.detectChanges();
+      const heroesDOM = debugEl.queryAll(By.css('.dashboard-hero'));
+      expect(heroesDOM.length).toBe(4);
+    });
+  }));
 
-    // expecting to navigate to id of the component's first hero
-    const id = component.heroes[0].id;
-    expect(navArgs).toBe(
-      '/heroes/' + id,
-      'should nav to HeroDetail for first hero'
-    );
-  });
+  it('Should tell router to navigate when hero clicked', async(() => {
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      fixture.detectChanges();
+      const firstHeroDOM = debugEl.query(By.css('.dashboard-hero'));
+      click(firstHeroDOM);
+
+      const spy = router.navigateByUrl as jasmine.Spy;
+
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy.calls.first().args[0]).toBe(
+        `/heroes/${component.heroes[0].id}`
+      );
+    });
+  }));
 });

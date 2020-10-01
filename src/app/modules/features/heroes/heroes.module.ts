@@ -28,7 +28,10 @@ import { TwainService } from './services/twain.service';
 import { FormsModule } from '@angular/forms';
 
 /** Directives */
-import { HighlightDirective } from './directives/highlight.directive';
+import { HighlightDirective } from './directives/highlight';
+
+/** Pipes */
+import { TitleCasePipe } from './pipes/title-case';
 
 @NgModule({
   imports: [
@@ -51,6 +54,7 @@ import { HighlightDirective } from './directives/highlight.directive';
     TwainComponent,
     WelcomeComponent,
     HighlightDirective,
+    TitleCasePipe,
   ],
   providers: [UserService, HeroService, TwainService, HeroDetailService],
 })

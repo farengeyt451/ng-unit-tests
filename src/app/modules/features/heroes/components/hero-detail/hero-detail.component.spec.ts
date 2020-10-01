@@ -14,12 +14,12 @@ import {
   async,
   ComponentFixture,
   fakeAsync,
+  inject,
   TestBed,
   tick,
 } from '@angular/core/testing';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { of } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { HeroService } from '../../services/hero.service';
 
@@ -130,8 +130,6 @@ describe('HeroDetailComponent - with TestBed', () => {
           HeroDetailService
         ) as any;
       });
-
-    // heroDetailServiceSpy.getHero.and.returnValue(asyncData(expectedHero));
   }));
 
   it('Should create component', async(() => {
@@ -179,6 +177,10 @@ describe('HeroDetailComponent - with TestBed', () => {
  * Stub ActivatedRoute
  */
 describe('Component: HeroDetailComponent - with "HeroModule" setup', () => {
+  let expectedHero: Hero;
+  let fixture: ComponentFixture<HeroDetailComponent>;
+  let component: HeroDetailComponent;
+  let debugEl: DebugElement;
   let activatedRoute: ActivatedRouteStub;
   let routerSpy: jasmine.SpyObj<Router>;
 
@@ -198,11 +200,6 @@ describe('Component: HeroDetailComponent - with "HeroModule" setup', () => {
   });
 
   describe('When navigate to existing hero', () => {
-    let expectedHero: Hero;
-    let fixture: ComponentFixture<HeroDetailComponent>;
-    let component: HeroDetailComponent;
-    let debugEl: DebugElement;
-
     beforeEach(async(() => {
       expectedHero = getTestHeroes()[1];
       activatedRoute.setParamMap({ id: expectedHero.id });
@@ -280,7 +277,125 @@ describe('Component: HeroDetailComponent - with "HeroModule" setup', () => {
 
       expect(nameDisplay.nativeElement.textContent).toBe('Quick Brown Fox');
     });
+
+    it('Should navigate to relative path "../" if hero does not exist', async(() => {
+      activatedRoute.setParamMap({ id: 99999 });
+
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        expect(routerSpy.navigate).toHaveBeenCalled();
+        expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
+        expect(routerSpy.navigate.calls.any()).toBe(true);
+        expect(routerSpy.navigate.calls.first().args.length).toBe(2);
+        expect(routerSpy.navigate.calls.first().args[0]).toContain('../');
+      });
+    }));
   });
+});
+
+/**
+ * Override HeroDetailComponent (by HeroDetailServiceSpy) provided in HeroDetailComponent
+ * HeroDetailServiceSpy does not call HeroService methods, instead call fake #getHero and #saveHero methods
+ * Use stub activatedRoute, but ActivatedRouteStub irrelevant here (ignored, because we use strait HeroDetailServiceSpy)
+ */
+describe('Component: HeroDetailComponent - override its provided HeroDetailService', () => {
+  let fixture: ComponentFixture<HeroDetailComponent>;
+  let component: HeroDetailComponent;
+  let debugEl: DebugElement;
+  let activatedRoute: ActivatedRouteStub;
+  let routerSpy: jasmine.SpyObj<Router>;
+  let hdsSpy: HeroDetailServiceSpy;
+
+  beforeEach(async(() => {
+    routerSpy = jasmine.createSpyObj(Router, ['navigate']);
+    activatedRoute = new ActivatedRouteStub({ id: 99999 }); // Ignored by fixture component
+
+    TestBed.configureTestingModule({
+      imports: [FormsModule],
+      declarations: [HeroDetailComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: activatedRoute },
+        { provide: Router, useValue: routerSpy },
+        { provide: HeroDetailService, useValue: {} }, // HeroDetailService provided in HeroDetailComponent
+      ],
+    })
+
+      /** Override component's own provider */
+      .overrideComponent(HeroDetailComponent, {
+        set: {
+          providers: [
+            { provide: HeroDetailService, useClass: HeroDetailServiceSpy },
+          ],
+        },
+      })
+      .compileComponents()
+      .then(() => {
+        fixture = TestBed.createComponent(HeroDetailComponent);
+        debugEl = fixture.debugElement;
+        component = debugEl.componentInstance;
+
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+        });
+
+        hdsSpy = fixture.debugElement.injector.get(HeroDetailService) as any;
+      });
+  }));
+
+  it('Should have called #getHero', () => {
+    expect(hdsSpy.getHero.calls.count()).toBe(1);
+    expect(hdsSpy.getHero).toHaveBeenCalled();
+    expect(hdsSpy.getHero).toHaveBeenCalledTimes(1);
+  });
+
+  it("Should display stub hero's name", () => {
+    const heroName = debugEl.query(By.css('.hero-detail__name'));
+    expect(heroName.nativeElement.textContent).toBe(hdsSpy.testHero.name);
+  });
+
+  it('Should save stub hero change', fakeAsync(() => {
+    const origName = hdsSpy.testHero.name;
+    const newName = 'New Name';
+    const nameInput: DebugElement = debugEl.query(
+      By.css('.hero-detail__input')
+    );
+
+    nameInput.nativeElement.value = newName;
+
+    nameInput.nativeElement.dispatchEvent(new Event('input')); // Simulate user input
+
+    expect(component.hero.name).toBe(newName); // Two-way binding through ngModel, name should change
+    expect(hdsSpy.testHero.name).toBe(origName); // In service should be old name before saving
+
+    const saveBtn = debugEl.query(By.css('.hero-detail__action--save'));
+
+    click(saveBtn); // Simulate user click "Save" button
+
+    expect(hdsSpy.saveHero.calls.count()).toBe(1);
+
+    tick(); // Wait for async save to complete
+    expect(hdsSpy.testHero.name).toBe(newName);
+    expect(routerSpy.navigate.calls.any()).toBe(true);
+  }));
+
+  /**
+   * 1. #inject gets the service from the fixture
+   * 2. fixture.debugElement.injector to get service from component
+   * 3. compare services, they should not be equal
+   **/
+  it('Fixture injected service is not the component injected service', inject(
+    [HeroDetailService],
+    (fixtureService: HeroDetailService) => {
+      const componentService = fixture.debugElement.injector.get(
+        HeroDetailService
+      );
+      expect(fixtureService).not.toBe(componentService);
+    }
+  ));
 });
 
 class HeroDetailServiceSpy {

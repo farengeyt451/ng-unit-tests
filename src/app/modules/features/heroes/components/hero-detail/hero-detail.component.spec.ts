@@ -322,7 +322,13 @@ describe('Component: HeroDetailComponent - override its provided HeroDetailServi
       ],
     })
 
-      /** Override component's own provider */
+      /**
+       * Override component's own provider
+       * It's not possible to stub the component's HeroDetailService in the providers of the TestBed.configureTestingModule
+       * Those are providers for the testing module, not the component
+       * They prepare the dependency injector at the fixture level
+       * TestBed.overrideComponent method can replace the component's providers with easy-to-manage test doubles
+       */
       .overrideComponent(HeroDetailComponent, {
         set: {
           providers: [

@@ -8,7 +8,7 @@ import { HeroListComponent } from './components/hero-list';
 /** Components */
 import { HeroesIndexComponent } from './pages/heroes-index';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: '',
     component: HeroesIndexComponent,

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Hero } from '../interfaces/hero.interface';
-import { HeroService } from './hero.service';
+import { HeroService } from './hero-service';
 
 @Injectable()
 export class HeroDetailService {

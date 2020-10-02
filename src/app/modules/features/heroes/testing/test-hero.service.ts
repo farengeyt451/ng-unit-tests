@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { asyncData } from './async-observable-helpers';
 import { Hero } from '../interfaces/hero.interface';
-import { HeroService } from '../services/hero.service';
+import { HeroService } from '../services/hero-service';
 import { getTestHeroes } from './test-heroes';
 
 @Injectable()

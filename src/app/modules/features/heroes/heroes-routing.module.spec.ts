@@ -19,11 +19,11 @@ import { HeroesIndexComponent } from './pages/heroes-index';
 import { AboutComponent } from './components/about';
 import { DashboardComponent } from './components/dashboard';
 
-import { HeroService } from './services/hero.service';
+import { HeroService } from './services/hero-service';
 import { TwainService } from './services/twain.service';
 import { HeroListComponent } from './components/hero-list';
 
-let comp: HeroesIndexComponent;
+let component: HeroesIndexComponent;
 let fixture: ComponentFixture<HeroesIndexComponent>;
 let page: Page;
 let router: Router;
@@ -44,7 +44,7 @@ describe('HeroesIndexComponent and RouterTestingModule', () => {
       .compileComponents()
       .then(() => {
         fixture = TestBed.createComponent(HeroesIndexComponent);
-        comp = fixture.componentInstance;
+        component = fixture.componentInstance;
 
         const injector = fixture.debugElement.injector;
         locationSpy = injector.get(Location) as SpyLocation;
@@ -126,7 +126,7 @@ class Page {
     this.aboutLinkDe = links[2];
     this.dashboardLinkDe = links[0];
     this.heroesLinkDe = links[1];
-    this.comp = comp;
+    this.comp = component;
     this.fixture = fixture;
     this.router = router;
   }

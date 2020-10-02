@@ -4,11 +4,9 @@ import {
   HttpHeaders,
   HttpErrorResponse,
 } from '@angular/common/http';
-
 import { Observable } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-
-import { Hero } from '../interfaces/hero.interface';
+import { Hero } from '../../interfaces/hero.interface';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),

@@ -95,7 +95,7 @@ describe('Component: BannerComponent', () => {
     expect(h1.textContent).toContain(oldTitle);
   });
 
-  it('should display updated title after detectChanges', () => {
+  it('Should display updated title after detectChanges', () => {
     component.title = 'Test Title';
     /** Detect changes explicitly */
     fixture.detectChanges();

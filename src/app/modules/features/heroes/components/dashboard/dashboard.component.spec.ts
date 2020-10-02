@@ -2,7 +2,7 @@ import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { HeroService } from '../../services/hero.service';
+import { HeroService } from '../../services/hero-service';
 import { asyncData, click, getTestHeroes } from '../../testing';
 import { DashboardHeroComponent } from '../dashboard-hero/dashboard-hero.component';
 import { DashboardComponent } from './dashboard.component';

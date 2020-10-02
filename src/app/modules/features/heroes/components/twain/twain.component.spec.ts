@@ -107,7 +107,7 @@ describe('Component: TwainComponent', () => {
    * The TestBed.compileComponents() method (see below) calls XHR to read external template and css files during "just-in-time" compilation
    * Use async() to run test body in special async test zone
    */
-  it('should show quote after getQuote (async)', async(() => {
+  it('Should show quote after getQuote (async)', async(() => {
     /** Simulate async observable */
     twainServiceSpy.getQuote.and.returnValue(asyncData('Async quote'));
 

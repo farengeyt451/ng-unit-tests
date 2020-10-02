@@ -8,7 +8,7 @@ import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 
 /** Services */
 import { UserService } from './services/user.service';
-import { HeroService } from './services/hero.service';
+import { HeroService } from './services/hero-service';
 import { InMemoryDataService } from './services/in-memory-data.service';
 import { HeroDetailService } from './services/hero-detail.service';
 

@@ -1,14 +1,3 @@
-import { HeroDetailComponent } from './hero-detail.component';
-import { HeroDetailService } from '../../services/hero-detail.service';
-import { Hero } from '../../interfaces/hero.interface';
-import {
-  asyncData,
-  ActivatedRouteStub,
-  ActivatedRoute,
-  getTestHeroes,
-  TestHeroService,
-  click,
-} from '../../testing';
 import { Router } from '@angular/router';
 import {
   async,
@@ -21,7 +10,18 @@ import {
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { HeroService } from '../../services/hero.service';
+import { HeroDetailComponent } from './hero-detail.component';
+import { HeroDetailService } from '../../services/hero-detail.service';
+import { Hero } from '../../interfaces/hero.interface';
+import {
+  asyncData,
+  ActivatedRouteStub,
+  ActivatedRoute,
+  getTestHeroes,
+  TestHeroService,
+  click,
+} from '../../testing';
+import { HeroService } from '../../services/hero-service';
 
 describe('HeroDetailComponent - without TestBed', () => {
   let component: HeroDetailComponent;
